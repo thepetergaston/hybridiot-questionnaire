@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HYBRIDIOT - Find Your Perfect Vehicle</title>
+    <meta name="description" content="A quick, judgment-free guide to help you find the right hybrid, EV, or gas-sipper based on how you actually live.">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- React -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <!-- Netlify Forms - Hidden form for Netlify to detect -->
+    <form name="vehicle-questionnaire" netlify netlify-honeypot="bot-field" hidden>
+        <input type="text" name="dailyDriving" />
+        <input type="text" name="vehicleNeeds" />
+        <input type="text" name="parkingLocation" />
+        <input type="text" name="tripLength" />
+        <input type="text" name="monthlyBudget" />
+        <input type="text" name="purchasePreference" />
+        <input type="text" name="gasAttitude" />
+        <input type="text" name="drivingPersonality" />
+        <input type="text" name="mustHaves" />
+        <input type="text" name="excludeBrands" />
+        <input type="email" name="email" />
+        <input type="text" name="wantsRecommendations" />
+    </form>
+
+    <script type="text/babel">
+        const { useState } = React;
+        const { ChevronRight, ChevronLeft, Mail, CheckCircle } = lucide;
+
+        const VehicleQuestionnaire = () => {
+            const [currentStep, setCurrentStep] = useState(0);
+            const [formData, setFormData] = useState({
+                dailyDriving: '',
+                vehicleNeeds: [],
+                parkingLocation: '',
+                tripLength: '',
+                monthlyBudget: '',
+                purchasePreference: '',
+                gasAttitude: '',
+                drivingPersonality: '',
+                mustHaves: '',
+                excludeBrands: [],
+                email: '',
+                wantsRecommendations: false
+            });
+            const [submitted, setSubmitted] = useState(false);
+
+            const handleInputChange = (field, value) => {
+                setFormData(prev => ({
+                    ...prev,
+                    [field]: value
+                }));
+            };
+
+            const handleMultiSelect = (field, value) => {
+                setFormData(prev => ({
+                    ...prev,
+                    [field]: prev[field].includes(value) 
+                        ? prev[field].filter(item => item !== value)
+                        : [...prev[field], value]
+                }));
+            };
+
+            const nextStep = () => {
+                setCurrentStep(prev => Math.min(prev + 1, steps.length - 1));
+            };
+
+            const prevStep = () => {
+                setCurrentStep(prev => Math.max(prev - 1, 0));
+            };
+
+            const handleSubmit = async () => {
+                try {
+                    const submitData = new FormData();
+                    submitData.append('form-name', 'vehicle-questionnaire');
+                    
+                    // Add all form data
+                    Object.keys(formData).forEach(key => {
+                        if (Array.isArray(formData[key])) {
+                            submitData.append(key, formData[key].join(', '));
+                        } else {
+                            submitData.append(key, formData[key]);
+                        }
+                    });
+
+                    await fetch('/', {
+                        method: 'POST',
+                        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                        body: new URLSearchParams(submitData).toString()
+                    });
+                    
+                    setSubmitted(true);
+                } catch (error) {
+                    console.error('Error submitting form:', error);
+                    // Still show success message for better UX
+                    setSubmitted(true);
+                }
+            };
+
+            const steps = [
+                {
+                    title: "Daily Driving",
+                    component: (
+                        <div className="space-y-4">
+                            <h3 className="text-2xl font-semibold text-teal-800 mb-6">What's your daily driving like?</h3>
+                            <div className="space-y-3">
+                                {[
+                                    'Just errands and school drop-off',
+                                    'Commute to work (30+ miles/day)',
+                                    'Frequent road trips or long drives',
+                                    'Lots of stop-and-go (rideshare, delivery, in-town work)',
+                                    'I barely drive, but I want something reliable when I do'
+                                ].map(option => (
+                                    <label key={option} className="flex items-center space-x-4 p-4 border-2 border-teal-300 rounded-xl hover:bg-teal-50 hover:border-orange-400 cursor-pointer transition-all duration-200 group">
+                                        <input
+                                            type="radio"
+                                            name="dailyDriving"
+                                            value={option}
+                                            checked={formData.dailyDriving === option}
+                                            onChange={(e) => handleInputChange('dailyDriving', e.target.value)}
+                                            className="text-teal-800 w-5 h-5"
+                                        />
+                                        <span className="text-teal-800 group-hover:text-orange-600 transition-colors">{option}</span>
+                                    </label>
+                                ))}
+                            </div>
+                        </div>
+                    )
+                },
+                {
+                    title: "Vehicle Needs",
+                    component: (
+                        <div className="space-y-4">
+                            <h3 className="text-2xl font-semibold text-teal-800 mb-6">What does your life need from your car?</h3>
+                            <p className="text-teal-600 mb-6 text-lg">Check all that apply</p>
+                            
+                            <div className="space-y-8">
+                                <div>
+                                    <h4 className="font-semibold text-teal-800 mb-4 text-lg flex items-center">
+                                        <div className="w-3 h-3 bg-orange-500 rounded-full mr-3"></div>
+                                        Family & People
+                                    </h4>
+                                    <div className="space-y-3 ml-6">
+                                        {[
+                                            'Room for car seats or growing kids',
+                                            'Easy access for older passengers or mobility needs',
+                                            'Comfortable for long drives'
+                                        ].map(option => (
+                                            <label key={option} className="flex items-center space-x-3 p-3 hover:bg-teal-50 rounded-lg cursor-pointer transition-colors">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={formData.vehicleNeeds.includes(option)}
+                                                    onChange={() => handleMultiSelect('vehicleNeeds', option)}
+                                                    className="text-teal-800 w-5 h-5 rounded"
+                                                />
+                                                <span className="text-teal-800">{option}</span>
+                                            </label>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <h4 className="font-semibold text-teal-800 mb-4 text-lg flex items-center">
+                                        <div className="w-3 h-3 bg-orange-500 rounded-full mr-3"></div>
+                                        Pets
+                                    </h4>
+                                    <div className="space-y-3 ml-6">
+                                        {[
+                                            'Space for a crate or big dog',
+                                            'Low step-in height',
+                                            'Easy-to-clean interior'
+                                        ].map(option => (
+                                            <label key={option} className="flex items-center space-x-3 p-3 hover:bg-teal-50 rounded-lg cursor-pointer transition-colors">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={formData.vehicleNeeds.includes(option)}
+                                                    onChange={() => handleMultiSelect('vehicleNeeds', option)}
+                                                    className="text-teal-800 w-5 h-5 rounded"
+                                                />
+                                                <span className="text-teal-800">{option}</span>
+                                            </label>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <h4 className="font-semibold text-teal-800 mb-4 text-lg flex items-center">
+                                        <div className="w-3 h-3 bg-orange-500 rounded-full mr-3"></div>
+                                        Practical Stuff
+                                    </h4>
+                                    <div className="space-y-3 ml-6">
+                                        {[
+                                            'Big trunk or cargo space',
+                                            'Fits in tight spots (city or small garage)',
+                                            'AWD or good in snow/rain',
+                                            'Can tow something or carry gear on the roof'
+                                        ].map(option => (
+                                            <label key={option} className="flex items-center space-x-3 p-3 hover:bg-teal-50 rounded-lg cursor-pointer transition-colors">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={formData.vehicleNeeds.includes(option)}
+                                                    onChange={() => handleMultiSelect('vehicleNeeds', option)}
+                                                    className="text-teal-800 w-5 h-5 rounded"
+                                                />
+                                                <span className="text-teal-800">{option}</span>
+                                            </label>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <h4 className="font-semibold text-teal-800 mb-4 text-lg flex items-center">
+                                        <div className="w-3 h-3 bg-orange-500 rounded-full mr-3"></div>
+                                        Technology & Safety
+                                    </h4>
+                                    <div className="space-y-3 ml-6">
+                                        {[
+                                            'Apple CarPlay / Android Auto',
+                                            'Lane keeping, radar cruise, or similar driver assists',
+                                            'Strong crash test ratings / family-friendly safety',
+                                            'Blind spot warning, backup camera, etc.'
+                                        ].map(option => (
+                                            <label key={option} className="flex items-center space-x-3 p-3 hover:bg-teal-50 rounded-lg cursor-pointer transition-colors">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={formData.vehicleNeeds.includes(option)}
+                                                    onChange={() => handleMultiSelect('vehicleNeeds', option)}
+                                                    className="text-teal-800 w-5 h-5 rounded"
+                                                />
+                                                <span className="text-teal-800">{option}</span>
+                                            </label>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <h4 className="font-semibold text-teal-800 mb-4 text-lg flex items-center">
+                                        <div className="w-3 h-3 bg-orange-500 rounded-full mr-3"></div>
+                                        Other Priorities
+                                    </h4>
+                                    <div className="space-y-3 ml-6">
+                                        {[
+                                            'Save me money on gas and repairs',
+                                            'Needs to feel nice inside',
+                                            'I want something that looks cool / not boring'
+                                        ].map(option => (
+                                            <label key={option} className="flex items-center space-x-3 p-3 hover:bg-teal-50 rounded-lg cursor-pointer transition-colors">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={formData.vehicleNeeds.includes(option)}
+                                                    onChange={() => handleMultiSelect('vehicleNeeds', option)}
+                                                    className="text-teal-800 w-5 h-5 rounded"
+                                                />
+                                                <span className="text-teal-800">{option}</span>
+                                            </label>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )
+                },
+                {
+                    title: "Parking Setup",
+                    component: (
+                        <div className="space-y-4">
+                            <h3 className="text-2xl font-semibold text-teal-800 mb-6">Where do you park at night?</h3>
+                            <div className="space-y-3">
+                                {[
+                                    'In a garage (could install charger)',
+                                    'In a driveway (with outlet access)',
+                                    'Street or shared lot (no home charging)',
+                                    'Not sure yet'
+                                ].map(option => (
+                                    <label key={option} className="flex items-center space-x-4 p-4 border-2 border-teal-300 rounded-xl hover:bg-teal-50 hover:border-orange-400 cursor-pointer transition-all duration-200 group">
+                                        <input
+                                            type="radio"
+                                            name="parkingLocation"
+                                            value={option}
+                                            checked={formData.parkingLocation === option}
+                                            onChange={(e) => handleInputChange('parkingLocation', e.target.value)}
+                                            className="text-teal-800 w-5 h-5"
+                                        />
+                                        <span className="text-teal-800 group-hover:text-orange-600 transition-colors">{option}</span>
+                                    </label>
+                                ))}
+                            </div>
+                        </div>
+                    )
+                },
+                {
+                    title: "Trip Length",
+                    component: (
+                        <div className="space-y-4">
+                            <h3 className="text-2xl font-semibold text-teal-800 mb-6">What's your longest regular trip?</h3>
+                            <div className="space-y-3">
+                                {[
+                                    'Under 20 miles',
+                                    '20–60 miles',
+                                    '60–150 miles',
+                                    'Over 150 miles'
+                                ].map(option => (
+                                    <label key={option} className="flex items-center space-x-4 p-4 border-2 border-teal-300 rounded-xl hover:bg-teal-50 hover:border-orange-400 cursor-pointer transition-all duration-200 group">
+                                        <input
+                                            type="radio"
+                                            name="tripLength"
+                                            value={option}
+                                            checked={formData.tripLength === option}
+                                            onChange={(e) => handleInputChange('tripLength', e.target.value)}
+                                            className="text-teal-800 w-5 h-5"
+                                        />
+                                        <span className="text-teal-800 group-hover:text-orange-600 transition-colors">{option}</span>
+                                    </label>
+                                ))}
+                            </div>
+                        </div>
+                    )
+                },
+                {
+                    title: "Budget",
+                    component: (
+                        <div className="space-y-4">
+                            <h3 className="text-2xl font-semibold text-teal-800 mb-6">How much can you realistically spend per month — total?</h3>
+                            <p className="text-teal-600 mb-6 text-lg">Think loan/lease + gas/charging + insurance + maintenance</p>
+                            <div className="space-y-3">
+                                {[
+                                    'Under $400/month',
+                                    '$400–$600/month',
+                                    '$600–$800/month',
+                                    '$800–$1,000/month',
+                                    'I\'m flexible if it saves money long-term',
+                                    'I don\'t know — help me estimate based on income'
+                                ].map(option => (
+                                    <label key={option} className="flex items-center space-x-4 p-4 border-2 border-teal-300 rounded-xl hover:bg-teal-50 hover:border-orange-400 cursor-pointer transition-all duration-200 group">
+                                        <input
+                                            type="radio"
+                                            name="monthlyBudget"
+                                            value={option}
+                                            checked={formData.monthlyBudget === option}
+                                            onChange={(e) => handleInputChange('monthlyBudget', e.target.value)}
+                                            className="text-teal-800 w-5 h-5"
+                                        />
+                                        <span className="text-teal-800 group-hover:text-orange-600 transition-colors">{option}</span>
+                                    </label>
+                                ))}
+                            </div>
+                        </div>
+                    )
+                },
+                {
+                    title: "Purchase Style",
+                    component: (
+                        <div className="space-y-4">
+                            <h3 className="text-2xl font-semibold text-teal-800 mb-6">Would you consider...</h3>
+                            <div className="space-y-3">
+                                {[
+                                    'Buying new',
+                                    'Buying used',
+                                    'Leasing (lower payments, newer tech)',
+                                    'I just want something practical'
+                                ].map(option => (
+                                    <label key={option} className="flex items-center space-x-4 p-4 border-2 border-teal-300 rounded-xl hover:bg-teal-50 hover:border-orange-400 cursor-pointer transition-all duration-200 group">
+                                        <input
+                                            type="radio"
+                                            name="purchasePreference"
+                                            value={option}
+                                            checked={formData.purchasePreference === option}
+                                            onChange={(e) => handleInputChange('purchasePreference', e.target.value)}
+                                            className="text-teal-800 w-5 h-5"
+                                        />
+                                        <span className="text-teal-800 group-hover:text-orange-600 transition-colors">{option}</span>
+                                    </label>
+                                ))}
+                            </div>
+                        </div>
+                    )
+                },
+                {
+                    title: "Gas Preference",
+                    component: (
+                        <div className="space-y-4">
+                            <h3 className="text-2xl font-semibold text-teal-800 mb-6">How do you feel about gas?</h3>
+                            <div className="space-y-3">
+                                {[
+                                    'I want to go fully electric',
+                                    'I want to use less gas, but not ready to give it up',
+                                    'I\'m fine with gas if it saves money',
+                                    'I want the best mix of savings, convenience, and flexibility'
+                                ].map(option => (
+                                    <label key={option} className="flex items-center space-x-4 p-4 border-2 border-teal-300 rounded-xl hover:bg-teal-50 hover:border-orange-400 cursor-pointer transition-all duration-200 group">
+                                        <input
+                                            type="radio"
+                                            name="gasAttitude"
+                                            value={option}
+                                            checked={formData.gasAttitude === option}
+                                            onChange={(e) => handleInputChange('gasAttitude', e.target.value)}
+                                            className="text-teal-800 w-5 h-5"
+                                        />
+                                        <span className="text-teal-800 group-hover:text-orange-600 transition-colors">{option}</span>
+                                    </label>
+                                ))}
+                            </div>
+                        </div>
+                    )
+                },
+                {
+                    title: "Your Vibe",
+                    component: (
+                        <div className="space-y-4">
+                            <h3 className="text-2xl font-semibold text-teal-800 mb-6">What's your vibe?</h3>
+                            <div className="space-y-3">
+                                {[
+                                    'Budget-first: value, MPG, total cost',
+                                    'Comfort-first: nice interior, smooth ride',
+                                    'Tech-forward: good infotainment, safety features',
+                                    'Unique: I don\'t want to drive what everyone else has',
+                                    'Just need something that works'
+                                ].map(option => (
+                                    <label key={option} className="flex items-center space-x-4 p-4 border-2 border-teal-300 rounded-xl hover:bg-teal-50 hover:border-orange-400 cursor-pointer transition-all duration-200 group">
+                                        <input
+                                            type="radio"
+                                            name="drivingPersonality"
+                                            value={option}
+                                            checked={formData.drivingPersonality === option}
+                                            onChange={(e) => handleInputChange('drivingPersonality', e.target.value)}
+                                            className="text-teal-800 w-5 h-5"
+                                        />
+                                        <span className="text-teal-800 group-hover:text-orange-600 transition-colors">{option}</span>
+                                    </label>
+                                ))}
+                            </div>
+                        </div>
+                    )
+                },
+                {
+                    title: "Preferences",
+                    component: (
+                        <div className="space-y-6">
+                            <div>
+                                <h3 className="text-2xl font-semibold text-teal-800 mb-4">Any deal-breakers or must-haves?</h3>
+                                <textarea
+                                    className="w-full p-3 border border-teal-300 rounded-lg focus:border-orange-400 focus:ring-2 focus:ring-orange-200 transition-colors"
+                                    rows="3"
+                                    placeholder="e.g., 'AWD,' 'must have Apple CarPlay,' 'no touchscreen climate controls,' 'not a minivan,' etc."
+                                    value={formData.mustHaves}
+                                    onChange={(e) => handleInputChange('mustHaves', e.target.value)}
+                                />
+                            </div>
+
+                            <div>
+                                <h4 className="text-lg font-medium text-teal-800 mb-3">Exclude any brands you don't want to see?</h4>
+                                <div className="space-y-2">
+                                    {['Tesla', 'BMW', 'Luxury brands only'].map(brand => (
+                                        <label key={brand} className="flex items-center space-x-3 p-2">
+                                            <input
+                                                type="checkbox"
+                                                checked={formData.excludeBrands.includes(brand)}
+                                                onChange={() => handleMultiSelect('excludeBrands', brand)}
+                                                className="text-teal-800"
+                                            />
+                                            <span className="text-teal-800">{brand}</span>
+                                        </label>
+                                    ))}
+                                </div>
+                                <div className="mt-2">
+                                    <input
+                                        type="text"
+                                        className="w-full p-2 border border-teal-300 rounded focus:border-orange-400 focus:ring-2 focus:ring-orange-200 transition-colors"
+                                        placeholder="Other brands to exclude..."
+                                        onKeyPress={(e) => {
+                                            if (e.key === 'Enter' && e.target.value.trim()) {
+                                                handleMultiSelect('excludeBrands', e.target.value.trim());
+                                                e.target.value = '';
+                                            }
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    )
+                },
+                {
+                    title: "Get Results",
+                    component: (
+                        <div className="space-y-6">
+                            <h3 className="text-2xl font-semibold text-teal-800 mb-4">Want us to send you 2–3 recommendations that fit your life and budget?</h3>
+                            
+                            <div className="space-y-4">
+                                <label className="flex items-center space-x-3">
+                                    <input
+                                        type="checkbox"
+                                        checked={formData.wantsRecommendations}
+                                        onChange={(e) => handleInputChange('wantsRecommendations', e.target.checked)}
+                                        className="text-teal-800"
+                                    />
+                                    <span className="text-teal-800">Yes please, send me personalized recommendations</span>
+                                </label>
+
+                                {formData.wantsRecommendations && (
+                                    <div>
+                                        <label className="block text-sm font-medium text-teal-800 mb-2">
+                                            Email address
+                                        </label>
+                                        <input
+                                            type="email"
+                                            required
+                                            className="w-full p-3 border border-teal-300 rounded-lg focus:border-orange-400 focus:ring-2 focus:ring-orange-200 transition-colors"
+                                            placeholder="your@email.com"
+                                            value={formData.email}
+                                            onChange={(e) => handleInputChange('email', e.target.value)}
+                                        />
+                                    </div>
+                                )}
+                            </div>
+
+                            <button
+                                onClick={handleSubmit}
+                                className="w-full bg-gradient-to-r from-teal-800 to-orange-500 text-white py-4 px-8 rounded-xl hover:from-teal-900 hover:to-orange-600 transition-all duration-300 flex items-center justify-center space-x-3 text-lg font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                            >
+                                <Mail className="w-6 h-6" />
+                                <span>Get My Recommendations</span>
+                            </button>
+                        </div>
+                    )
+                }
+            ];
+
+            if (submitted) {
+                return (
+                    <div className="max-w-2xl mx-auto p-6 bg-white min-h-screen flex items-center">
+                        <div className="w-full text-center space-y-6 bg-white rounded-2xl p-8 shadow-xl border border-teal-200">
+                            <div className="p-4 bg-gradient-to-r from-teal-800 to-orange-500 rounded-full w-20 h-20 mx-auto flex items-center justify-center">
+                                <CheckCircle className="w-10 h-10 text-white" />
+                            </div>
+                            <h2 className="text-3xl font-bold text-teal-800">Thanks for completing the questionnaire!</h2>
+                            <p className="text-teal-600 text-lg leading-relaxed">
+                                {formData.wantsRecommendations 
+                                    ? "We'll send your personalized vehicle recommendations to your email within 24 hours."
+                                    : "Your responses have been recorded. Thanks for helping us understand what drivers really need!"
+                                }
+                            </p>
+                            <div className="mt-8 p-6 bg-gradient-to-r from-teal-50 to-orange-50 rounded-xl border border-teal-200">
+                                <p className="text-teal-800 font-medium">
+                                    Want to explore more tools? Check out our cost calculator to compare the true monthly costs of different vehicle types.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            const progress = ((currentStep + 1) / steps.length) * 100;
+
+            return (
+                <div className="max-w-3xl mx-auto p-6 bg-white min-h-screen">
+                    {/* Header */}
+                    <div className="text-center mb-8">
+                        <div className="flex items-center justify-center mb-6">
+                            <img 
+                                src="https://via.placeholder.com/300x120/1e7490/ffffff?text=HYBRIDIOT" 
+                                alt="HYBRIDIOT Logo" 
+                                className="h-16 w-auto"
+                            />
+                        </div>
+                        <h2 className="text-2xl font-semibold text-teal-800 mb-2">
+                            What's the Most Efficient Vehicle for Your Life?
+                        </h2>
+                        <p className="text-teal-600 text-lg">
+                            A quick, judgment-free guide to help you find the right hybrid, EV, or gas-sipper based on how you actually live.
+                        </p>
+                    </div>
+
+                    {/* Progress bar */}
+                    <div className="mb-8">
+                        <div className="flex justify-between text-sm text-teal-800 mb-2 font-medium">
+                            <span>Step {currentStep + 1} of {steps.length}</span>
+                            <span>{Math.round(progress)}% complete</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-3 shadow-inner">
+                            <div 
+                                className="bg-gradient-to-r from-teal-800 to-orange-500 h-3 rounded-full transition-all duration-500 shadow-sm" 
+                                style={{ width: `${progress}%` }}
+                            ></div>
+                        </div>
+                    </div>
+
+                    {/* Current step content */}
+                    <div className="bg-white rounded-xl shadow-xl p-8 mb-6 min-h-[400px] border border-teal-200">
+                        {steps[currentStep].component}
+                    </div>
+
+                    {/* Navigation */}
+                    <div className="flex justify-between">
+                        <button
+                            onClick={prevStep}
+                            disabled={currentStep === 0}
+                            className="flex items-center space-x-2 px-6 py-3 text-teal-800 disabled:text-gray-400 disabled:cursor-not-allowed hover:text-orange-600 transition-colors font-medium border border-teal-300 rounded-lg hover:border-orange-400 disabled:border-gray-200"
+                        >
+                            <ChevronLeft className="w-5 h-5" />
+                            <span>Previous</span>
+                        </button>
+
+                        {currentStep < steps.length - 1 && (
+                            <button
+                                onClick={nextStep}
+                                className="flex items-center space-x-2 px-8 py-3 bg-gradient-to-r from-teal-800 to-orange-500 text-white rounded-lg hover:from-teal-900 hover:to-orange-600 transition-all duration-300 shadow-lg font-medium"
+                            >
+                                <span>Next</span>
+                                <ChevronRight className="w-5 h-5" />
+                            </button>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<VehicleQuestionnaire />, document.getElementById('root'));
+    </script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+{
+  "name": "hybridiot-questionnaire",
+  "version": "1.0.0",
+  "description": "HYBRIDIOT Vehicle Questionnaire - Find the most efficient vehicle for your lifestyle",
+  "main": "index.html",
+  "scripts": {
+    "build": "echo 'Build complete'",
+    "start": "echo 'Starting development server'"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.0.0",
+    "vite": "^4.4.0"
+  },
+  "keywords": ["hybrid", "electric", "vehicle", "questionnaire", "automotive"],
+  "author": "HYBRIDIOT",
+  "license": "MIT"
+}

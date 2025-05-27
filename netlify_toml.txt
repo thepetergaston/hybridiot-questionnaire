@@ -1,0 +1,47 @@
+[build]
+  publish = "."
+  command = "echo 'Build complete'"
+
+# Form handling
+[[forms]]
+  name = "vehicle-questionnaire"
+  action = "/thank-you"
+
+# Notification settings for form submissions
+[[forms.notifications.email]]
+  from = "noreply@netlify.app"
+  to = "forms@hybridiot.com"
+  subject = "New Vehicle Questionnaire Submission"
+  body = """
+New vehicle questionnaire submission received!
+
+Daily Driving: {{ dailyDriving }}
+Vehicle Needs: {{ vehicleNeeds }}
+Parking Location: {{ parkingLocation }}
+Trip Length: {{ tripLength }}
+Monthly Budget: {{ monthlyBudget }}
+Purchase Preference: {{ purchasePreference }}
+Gas Attitude: {{ gasAttitude }}
+Driving Personality: {{ drivingPersonality }}
+Must Haves: {{ mustHaves }}
+Exclude Brands: {{ excludeBrands }}
+Email: {{ email }}
+Wants Recommendations: {{ wantsRecommendations }}
+
+Submitted at: {{ dateTime }}
+  """
+
+# Redirects
+[[redirects]]
+  from = "/thank-you"
+  to = "/"
+  status = 200
+
+# Headers for security
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
