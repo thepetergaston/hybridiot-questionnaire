@@ -17,7 +17,7 @@
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     
     <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    
     
     <style>
         body {
@@ -46,7 +46,16 @@
 
     <script type="text/babel">
         const { useState } = React;
-        const { ChevronRight, ChevronLeft, Mail, CheckCircle } = lucide;
+        const ChevronRight = () => React.createElement('svg', { width: 20, height: 20, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2 }, 
+  React.createElement('path', { d: 'm9 18 6-6-6-6' }));
+const ChevronLeft = () => React.createElement('svg', { width: 20, height: 20, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2 }, 
+  React.createElement('path', { d: 'm15 18-6-6 6-6' }));
+const Mail = () => React.createElement('svg', { width: 20, height: 20, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2 }, 
+  React.createElement('path', { d: 'M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z' }),
+  React.createElement('path', { d: 'm22 6-10 7L2 6' }));
+const CheckCircle = () => React.createElement('svg', { width: 20, height: 20, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2 }, 
+  React.createElement('path', { d: 'M22 11.08V12a10 10 0 1 1-5.93-9.14' }),
+  React.createElement('path', { d: 'm9 11 3 3L22 4' }));
 
         const VehicleQuestionnaire = () => {
             const [currentStep, setCurrentStep] = useState(0);
@@ -576,7 +585,7 @@
                     <div className="text-center mb-8">
                         <div className="flex items-center justify-center mb-6">
                             <img 
-                                src="https://via.placeholder.com/300x120/1e7490/ffffff?text=HYBRIDIOT" 
+                                src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='120' viewBox='0 0 300 120'%3E%3Crect width='300' height='120' fill='%231e7490'/%3E%3Ctext x='150' y='70' font-family='Arial, sans-serif' font-size='24' font-weight='bold' text-anchor='middle' fill='white'%3EHYBRIDIOT%3C/text%3E%3C/svg%3E" 
                                 alt="HYBRIDIOT Logo" 
                                 className="h-16 w-auto"
                             />
