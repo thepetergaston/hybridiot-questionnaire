@@ -10,11 +10,14 @@
     <script src="https://cdn.tailwindcss.com"></script>
     
     <!-- React -->
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+   <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     
     <!-- Babel for JSX -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Lucide Icons -->
+    
     
     <style>
         body {
@@ -37,28 +40,22 @@
         <input type="text" name="drivingPersonality" />
         <input type="text" name="mustHaves" />
         <input type="text" name="excludeBrands" />
-        <input type="text" name="firstName" />
-        <input type="text" name="lastName" />
         <input type="email" name="email" />
-        <input type="tel" name="phone" />
-        <input type="text" name="contactPreference" />
-        <input type="text" name="buyingTimeline" />
+        <input type="text" name="wantsRecommendations" />
     </form>
 
     <script type="text/babel">
         const { useState } = React;
-        
-        // Simple SVG icons
         const ChevronRight = () => React.createElement('svg', { width: 20, height: 20, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2 }, 
-          React.createElement('path', { d: 'm9 18 6-6-6-6' }));
-        const ChevronLeft = () => React.createElement('svg', { width: 20, height: 20, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2 }, 
-          React.createElement('path', { d: 'm15 18-6-6 6-6' }));
-        const Mail = () => React.createElement('svg', { width: 20, height: 20, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2 }, 
-          React.createElement('path', { d: 'M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z' }),
-          React.createElement('path', { d: 'm22 6-10 7L2 6' }));
-        const CheckCircle = () => React.createElement('svg', { width: 40, height: 40, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2 }, 
-          React.createElement('path', { d: 'M22 11.08V12a10 10 0 1 1-5.93-9.14' }),
-          React.createElement('path', { d: 'm9 11 3 3L22 4' }));
+  React.createElement('path', { d: 'm9 18 6-6-6-6' }));
+const ChevronLeft = () => React.createElement('svg', { width: 20, height: 20, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2 }, 
+  React.createElement('path', { d: 'm15 18-6-6 6-6' }));
+const Mail = () => React.createElement('svg', { width: 20, height: 20, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2 }, 
+  React.createElement('path', { d: 'M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z' }),
+  React.createElement('path', { d: 'm22 6-10 7L2 6' }));
+const CheckCircle = () => React.createElement('svg', { width: 20, height: 20, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2 }, 
+  React.createElement('path', { d: 'M22 11.08V12a10 10 0 1 1-5.93-9.14' }),
+  React.createElement('path', { d: 'm9 11 3 3L22 4' }));
 
         const VehicleQuestionnaire = () => {
             const [currentStep, setCurrentStep] = useState(0);
@@ -73,12 +70,8 @@
                 drivingPersonality: '',
                 mustHaves: '',
                 excludeBrands: [],
-                firstName: '',
-                lastName: '',
                 email: '',
-                phone: '',
-                contactPreference: '',
-                buyingTimeline: ''
+                wantsRecommendations: false
             });
             const [submitted, setSubmitted] = useState(false);
 
@@ -129,10 +122,10 @@
                     setSubmitted(true);
                 } catch (error) {
                     console.error('Error submitting form:', error);
+                    // Still show success message for better UX
                     setSubmitted(true);
                 }
             };
-
             const steps = [
                 {
                     title: "Daily Driving",
@@ -494,143 +487,6 @@
                                                 onChange={() => handleMultiSelect('excludeBrands', brand)}
                                                 className="text-teal-800"
                                             />
-                                            <span className="text-teal-800">Email</span>
-                                        </label>
-                                        <label className="flex items-center space-x-3 p-3 border border-teal-300 rounded-lg hover:bg-teal-50 cursor-pointer">
-                                            <input
-                                                type="radio"
-                                                name="contactPreference"
-                                                value="Phone"
-                                                checked={formData.contactPreference === 'Phone'}
-                                                onChange={(e) => handleInputChange('contactPreference', e.target.value)}
-                                                className="text-teal-800"
-                                            />
-                                            <span className="text-teal-800">Phone</span>
-                                        </label>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-teal-800 mb-2">
-                                        I'm planning to buy a car... *
-                                    </label>
-                                    <select
-                                        required
-                                        className="w-full p-3 border border-teal-300 rounded-lg focus:border-orange-400 focus:ring-2 focus:ring-orange-200 transition-colors bg-white"
-                                        value={formData.buyingTimeline}
-                                        onChange={(e) => handleInputChange('buyingTimeline', e.target.value)}
-                                    >
-                                        <option value="">Select a timeframe...</option>
-                                        <option value="ASAP">ASAP</option>
-                                        <option value="2-3 months">2-3 months</option>
-                                        <option value="Within 6 months">Within 6 months</option>
-                                        <option value="Unsure">Unsure</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <button
-                                onClick={handleSubmit}
-                                className="w-full bg-gradient-to-r from-teal-800 to-orange-500 text-white py-4 px-8 rounded-xl hover:from-teal-900 hover:to-orange-600 transition-all duration-300 flex items-center justify-center space-x-3 text-lg font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-                            >
-                                <Mail className="w-6 h-6" />
-                                <span>Get My Recommendations</span>
-                            </button>
-                        </div>
-                    )
-                }
-            ];
-
-            if (submitted) {
-                return (
-                    <div className="max-w-2xl mx-auto p-6 bg-white min-h-screen flex items-center">
-                        <div className="w-full text-center space-y-6 bg-white rounded-2xl p-8 shadow-xl border border-teal-200">
-                            <div className="p-4 bg-gradient-to-r from-teal-800 to-orange-500 rounded-full w-20 h-20 mx-auto flex items-center justify-center">
-                                <CheckCircle className="w-10 h-10 text-white" />
-                            </div>
-                            <h2 className="text-3xl font-bold text-teal-800">Thanks for completing the questionnaire!</h2>
-                            <p className="text-teal-600 text-lg leading-relaxed">
-                                We'll send your personalized vehicle recommendations to your email within 24 hours.
-                            </p>
-                            <div className="mt-8 p-6 bg-gradient-to-r from-teal-50 to-orange-50 rounded-xl border border-teal-200">
-                                <p className="text-teal-800 font-medium">
-                                    Want to explore more tools? Check out our cost calculator to compare the true monthly costs of different vehicle types.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                );
-            }
-
-            const progress = ((currentStep + 1) / steps.length) * 100;
-
-            return (
-                <div className="max-w-3xl mx-auto p-6 bg-white min-h-screen">
-                    {/* Header */}
-                    <div className="text-center mb-8">
-                        <div className="flex items-center justify-center mb-6">
-                            <img 
-                                src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='120' viewBox='0 0 300 120'%3E%3Crect width='300' height='120' fill='%231e7490'/%3E%3Ctext x='150' y='70' font-family='Arial, sans-serif' font-size='24' font-weight='bold' text-anchor='middle' fill='white'%3EHYBRIDIOT%3C/text%3E%3C/svg%3E" 
-                                alt="HYBRIDIOT Logo" 
-                                className="h-16 w-auto"
-                            />
-                        </div>
-                        <h2 className="text-2xl font-semibold text-teal-800 mb-2">
-                            What's the Most Efficient Vehicle for Your Life?
-                        </h2>
-                        <p className="text-teal-600 text-lg">
-                            A quick, judgment-free guide to help you find the right hybrid, EV, or gas-sipper based on how you actually live.
-                        </p>
-                    </div>
-
-                    {/* Progress bar */}
-                    <div className="mb-8">
-                        <div className="flex justify-between text-sm text-teal-800 mb-2 font-medium">
-                            <span>Step {currentStep + 1} of {steps.length}</span>
-                            <span>{Math.round(progress)}% complete</span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-3 shadow-inner">
-                            <div 
-                                className="bg-gradient-to-r from-teal-800 to-orange-500 h-3 rounded-full transition-all duration-500 shadow-sm" 
-                                style={{ width: `${progress}%` }}
-                            ></div>
-                        </div>
-                    </div>
-
-                    {/* Current step content */}
-                    <div className="bg-white rounded-xl shadow-xl p-8 mb-6 min-h-[400px] border border-teal-200">
-                        {steps[currentStep].component}
-                    </div>
-
-                    {/* Navigation */}
-                    <div className="flex justify-between">
-                        <button
-                            onClick={prevStep}
-                            disabled={currentStep === 0}
-                            className="flex items-center space-x-2 px-6 py-3 text-teal-800 disabled:text-gray-400 disabled:cursor-not-allowed hover:text-orange-600 transition-colors font-medium border border-teal-300 rounded-lg hover:border-orange-400 disabled:border-gray-200"
-                        >
-                            <ChevronLeft className="w-5 h-5" />
-                            <span>Previous</span>
-                        </button>
-
-                        {currentStep < steps.length - 1 && (
-                            <button
-                                onClick={nextStep}
-                                className="flex items-center space-x-2 px-8 py-3 bg-gradient-to-r from-teal-800 to-orange-500 text-white rounded-lg hover:from-teal-900 hover:to-orange-600 transition-all duration-300 shadow-lg font-medium"
-                            >
-                                <span>Next</span>
-                                <ChevronRight className="w-5 h-5" />
-                            </button>
-                        )}
-                    </div>
-                </div>
-            );
-        };
-
-        ReactDOM.render(<VehicleQuestionnaire />, document.getElementById('root'));
-    </script>
-</body>
-</html>
                                             <span className="text-teal-800">{brand}</span>
                                         </label>
                                     ))}
@@ -656,115 +512,34 @@
                     title: "Get Results",
                     component: (
                         <div className="space-y-6">
-                            <h3 className="text-2xl font-semibold text-teal-800 mb-4">Let's send you personalized recommendations</h3>
-                            <p className="text-teal-600 mb-6">We'll use this info to follow up with vehicle suggestions that fit your needs.</p>
+                            <h3 className="text-2xl font-semibold text-teal-800 mb-4">Want us to send you 2–3 recommendations that fit your life and budget?</h3>
                             
                             <div className="space-y-4">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <label className="flex items-center space-x-3">
+                                    <input
+                                        type="checkbox"
+                                        checked={formData.wantsRecommendations}
+                                        onChange={(e) => handleInputChange('wantsRecommendations', e.target.checked)}
+                                        className="text-teal-800"
+                                    />
+                                    <span className="text-teal-800">Yes please, send me personalized recommendations</span>
+                                </label>
+
+                                {formData.wantsRecommendations && (
                                     <div>
                                         <label className="block text-sm font-medium text-teal-800 mb-2">
-                                            First Name *
+                                            Email address
                                         </label>
                                         <input
-                                            type="text"
+                                            type="email"
                                             required
                                             className="w-full p-3 border border-teal-300 rounded-lg focus:border-orange-400 focus:ring-2 focus:ring-orange-200 transition-colors"
-                                            placeholder="John"
-                                            value={formData.firstName}
-                                            onChange={(e) => handleInputChange('firstName', e.target.value)}
+                                            placeholder="your@email.com"
+                                            value={formData.email}
+                                            onChange={(e) => handleInputChange('email', e.target.value)}
                                         />
                                     </div>
-                                    
-                                    <div>
-                                        <label className="block text-sm font-medium text-teal-800 mb-2">
-                                            Last Name *
-                                        </label>
-                                        <input
-                                            type="text"
-                                            required
-                                            className="w-full p-3 border border-teal-300 rounded-lg focus:border-orange-400 focus:ring-2 focus:ring-orange-200 transition-colors"
-                                            placeholder="Smith"
-                                            value={formData.lastName}
-                                            onChange={(e) => handleInputChange('lastName', e.target.value)}
-                                        />
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-teal-800 mb-2">
-                                        Email Address *
-                                    </label>
-                                    <input
-                                        type="email"
-                                        required
-                                        className="w-full p-3 border border-teal-300 rounded-lg focus:border-orange-400 focus:ring-2 focus:ring-orange-200 transition-colors"
-                                        placeholder="john@email.com"
-                                        value={formData.email}
-                                        onChange={(e) => handleInputChange('email', e.target.value)}
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-teal-800 mb-2">
-                                        Phone Number *
-                                    </label>
-                                    <input
-                                        type="tel"
-                                        required
-                                        className="w-full p-3 border border-teal-300 rounded-lg focus:border-orange-400 focus:ring-2 focus:ring-orange-200 transition-colors"
-                                        placeholder="(555) 123-4567"
-                                        value={formData.phone}
-                                        onChange={(e) => handleInputChange('phone', e.target.value)}
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-teal-800 mb-2">
-                                        Preferred Contact Method *
-                                    </label>
-                                    <div className="space-y-2">
-                                        <label className="flex items-center space-x-3 p-3 border border-teal-300 rounded-lg hover:bg-teal-50 cursor-pointer">
-                                            <input
-                                                type="radio"
-                                                name="contactPreference"
-                                                value="Email"
-                                                checked={formData.contactPreference === 'Email'}
-                                                onChange={(e) => handleInputChange('contactPreference', e.target.value)}
-className="text-teal-800"
-                                            />
-                                            <span className="text-teal-800">Email</span>
-                                        </label>
-                                        <label className="flex items-center space-x-3 p-3 border border-teal-300 rounded-lg hover:bg-teal-50 cursor-pointer">
-                                            <input
-                                                type="radio"
-                                                name="contactPreference"
-                                                value="Phone"
-                                                checked={formData.contactPreference === 'Phone'}
-                                                onChange={(e) => handleInputChange('contactPreference', e.target.value)}
-                                                className="text-teal-800"
-                                            />
-                                            <span className="text-teal-800">Phone</span>
-                                        </label>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-teal-800 mb-2">
-                                        I'm planning to buy a car... *
-                                    </label>
-                                    <select
-                                        required
-                                        className="w-full p-3 border border-teal-300 rounded-lg focus:border-orange-400 focus:ring-2 focus:ring-orange-200 transition-colors bg-white"
-                                        value={formData.buyingTimeline}
-                                        onChange={(e) => handleInputChange('buyingTimeline', e.target.value)}
-                                    >
-                                        <option value="">Select a timeframe...</option>
-                                        <option value="ASAP">ASAP</option>
-                                        <option value="2-3 months">2-3 months</option>
-                                        <option value="Within 6 months">Within 6 months</option>
-                                        <option value="Unsure">Unsure</option>
-                                    </select>
-                                </div>
+                                )}
                             </div>
 
                             <button
@@ -778,7 +553,6 @@ className="text-teal-800"
                     )
                 }
             ];
-
             if (submitted) {
                 return (
                     <div className="max-w-2xl mx-auto p-6 bg-white min-h-screen flex items-center">
@@ -788,7 +562,10 @@ className="text-teal-800"
                             </div>
                             <h2 className="text-3xl font-bold text-teal-800">Thanks for completing the questionnaire!</h2>
                             <p className="text-teal-600 text-lg leading-relaxed">
-                                We'll send your personalized vehicle recommendations to your email within 24 hours.
+                                {formData.wantsRecommendations 
+                                    ? "We'll send your personalized vehicle recommendations to your email within 24 hours."
+                                    : "Your responses have been recorded. Thanks for helping us understand what drivers really need!"
+                                }
                             </p>
                             <div className="mt-8 p-6 bg-gradient-to-r from-teal-50 to-orange-50 rounded-xl border border-teal-200">
                                 <p className="text-teal-800 font-medium">
