@@ -30,19 +30,23 @@
 
     <!-- Netlify Forms - Hidden form for Netlify to detect -->
     <form name="vehicle-questionnaire" netlify netlify-honeypot="bot-field" hidden>
-        <input type="text" name="dailyDriving" />
-        <input type="text" name="vehicleNeeds" />
-        <input type="text" name="parkingLocation" />
-        <input type="text" name="tripLength" />
-        <input type="text" name="monthlyBudget" />
-        <input type="text" name="purchasePreference" />
-        <input type="text" name="gasAttitude" />
-        <input type="text" name="drivingPersonality" />
-        <input type="text" name="mustHaves" />
-        <input type="text" name="excludeBrands" />
-        <input type="email" name="email" />
-        <input type="text" name="wantsRecommendations" />
-    </form>
+    <input type="text" name="dailyDriving" />
+    <input type="text" name="vehicleNeeds" />
+    <input type="text" name="parkingLocation" />
+    <input type="text" name="tripLength" />
+    <input type="text" name="monthlyBudget" />
+    <input type="text" name="purchasePreference" />
+    <input type="text" name="gasAttitude" />
+    <input type="text" name="drivingPersonality" />
+    <input type="text" name="mustHaves" />
+    <input type="text" name="excludeBrands" />
+    <input type="text" name="firstName" />
+    <input type="text" name="lastName" />
+    <input type="email" name="email" />
+    <input type="tel" name="phone" />
+    <input type="text" name="contactPreference" />
+    <input type="text" name="buyingTimeline" />
+</form>
 
     <script type="text/babel">
         const { useState } = React;
@@ -57,22 +61,24 @@ const CheckCircle = () => React.createElement('svg', { width: 20, height: 20, vi
   React.createElement('path', { d: 'M22 11.08V12a10 10 0 1 1-5.93-9.14' }),
   React.createElement('path', { d: 'm9 11 3 3L22 4' }));
 
-        const VehicleQuestionnaire = () => {
-            const [currentStep, setCurrentStep] = useState(0);
-            const [formData, setFormData] = useState({
-                dailyDriving: '',
-                vehicleNeeds: [],
-                parkingLocation: '',
-                tripLength: '',
-                monthlyBudget: '',
-                purchasePreference: '',
-                gasAttitude: '',
-                drivingPersonality: '',
-                mustHaves: '',
-                excludeBrands: [],
-                email: '',
-                wantsRecommendations: false
-            });
+        const [formData, setFormData] = useState({
+    dailyDriving: '',
+    vehicleNeeds: [],
+    parkingLocation: '',
+    tripLength: '',
+    monthlyBudget: '',
+    purchasePreference: '',
+    gasAttitude: '',
+    drivingPersonality: '',
+    mustHaves: '',
+    excludeBrands: [],
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    contactPreference: '',
+    buyingTimeline: ''
+});
             const [submitted, setSubmitted] = useState(false);
 
             const handleInputChange = (field, value) => {
@@ -508,50 +514,131 @@ const CheckCircle = () => React.createElement('svg', { width: 20, height: 20, vi
                         </div>
                     )
                 },
-                {
-                    title: "Get Results",
-                    component: (
-                        <div className="space-y-6">
-                            <h3 className="text-2xl font-semibold text-teal-800 mb-4">Want us to send you 2–3 recommendations that fit your life and budget?</h3>
-                            
-                            <div className="space-y-4">
-                                <label className="flex items-center space-x-3">
-                                    <input
-                                        type="checkbox"
-                                        checked={formData.wantsRecommendations}
-                                        onChange={(e) => handleInputChange('wantsRecommendations', e.target.checked)}
-                                        className="text-teal-800"
-                                    />
-                                    <span className="text-teal-800">Yes please, send me personalized recommendations</span>
-                                </label>
+               {
+    title: "Get Results",
+    component: (
+        <div className="space-y-6">
+            <h3 className="text-2xl font-semibold text-teal-800 mb-4">Let's send you personalized recommendations</h3>
+            <p className="text-teal-600 mb-6">We'll use this info to follow up with vehicle suggestions that fit your needs.</p>
+            
+            <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label className="block text-sm font-medium text-teal-800 mb-2">
+                            First Name *
+                        </label>
+                        <input
+                            type="text"
+                            required
+                            className="w-full p-3 border border-teal-300 rounded-lg focus:border-orange-400 focus:ring-2 focus:ring-orange-200 transition-colors"
+                            placeholder="John"
+                            value={formData.firstName}
+                            onChange={(e) => handleInputChange('firstName', e.target.value)}
+                        />
+                    </div>
+                    
+                    <div>
+                        <label className="block text-sm font-medium text-teal-800 mb-2">
+                            Last Name *
+                        </label>
+                        <input
+                            type="text"
+                            required
+                            className="w-full p-3 border border-teal-300 rounded-lg focus:border-orange-400 focus:ring-2 focus:ring-orange-200 transition-colors"
+                            placeholder="Smith"
+                            value={formData.lastName}
+                            onChange={(e) => handleInputChange('lastName', e.target.value)}
+                        />
+                    </div>
+                </div>
 
-                                {formData.wantsRecommendations && (
-                                    <div>
-                                        <label className="block text-sm font-medium text-teal-800 mb-2">
-                                            Email address
-                                        </label>
-                                        <input
-                                            type="email"
-                                            required
-                                            className="w-full p-3 border border-teal-300 rounded-lg focus:border-orange-400 focus:ring-2 focus:ring-orange-200 transition-colors"
-                                            placeholder="your@email.com"
-                                            value={formData.email}
-                                            onChange={(e) => handleInputChange('email', e.target.value)}
-                                        />
-                                    </div>
-                                )}
-                            </div>
+                <div>
+                    <label className="block text-sm font-medium text-teal-800 mb-2">
+                        Email Address *
+                    </label>
+                    <input
+                        type="email"
+                        required
+                        className="w-full p-3 border border-teal-300 rounded-lg focus:border-orange-400 focus:ring-2 focus:ring-orange-200 transition-colors"
+                        placeholder="john@email.com"
+                        value={formData.email}
+                        onChange={(e) => handleInputChange('email', e.target.value)}
+                    />
+                </div>
 
-                            <button
-                                onClick={handleSubmit}
-                                className="w-full bg-gradient-to-r from-teal-800 to-orange-500 text-white py-4 px-8 rounded-xl hover:from-teal-900 hover:to-orange-600 transition-all duration-300 flex items-center justify-center space-x-3 text-lg font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-                            >
-                                <Mail className="w-6 h-6" />
-                                <span>Get My Recommendations</span>
-                            </button>
-                        </div>
-                    )
-                }
+                <div>
+                    <label className="block text-sm font-medium text-teal-800 mb-2">
+                        Phone Number *
+                    </label>
+                    <input
+                        type="tel"
+                        required
+                        className="w-full p-3 border border-teal-300 rounded-lg focus:border-orange-400 focus:ring-2 focus:ring-orange-200 transition-colors"
+                        placeholder="(555) 123-4567"
+                        value={formData.phone}
+                        onChange={(e) => handleInputChange('phone', e.target.value)}
+                    />
+                </div>
+
+                <div>
+                    <label className="block text-sm font-medium text-teal-800 mb-2">
+                        Preferred Contact Method *
+                    </label>
+                    <div className="space-y-2">
+                        <label className="flex items-center space-x-3 p-3 border border-teal-300 rounded-lg hover:bg-teal-50 cursor-pointer">
+                            <input
+                                type="radio"
+                                name="contactPreference"
+                                value="Email"
+                                checked={formData.contactPreference === 'Email'}
+                                onChange={(e) => handleInputChange('contactPreference', e.target.value)}
+                                className="text-teal-800"
+                            />
+                            <span className="text-teal-800">Email</span>
+                        </label>
+                        <label className="flex items-center space-x-3 p-3 border border-teal-300 rounded-lg hover:bg-teal-50 cursor-pointer">
+                            <input
+                                type="radio"
+                                name="contactPreference"
+                                value="Phone"
+                                checked={formData.contactPreference === 'Phone'}
+                                onChange={(e) => handleInputChange('contactPreference', e.target.value)}
+                                className="text-teal-800"
+                            />
+                            <span className="text-teal-800">Phone</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div>
+                    <label className="block text-sm font-medium text-teal-800 mb-2">
+                        I'm planning to buy a car... *
+                    </label>
+                    <select
+                        required
+                        className="w-full p-3 border border-teal-300 rounded-lg focus:border-orange-400 focus:ring-2 focus:ring-orange-200 transition-colors bg-white"
+                        value={formData.buyingTimeline}
+                        onChange={(e) => handleInputChange('buyingTimeline', e.target.value)}
+                    >
+                        <option value="">Select a timeframe...</option>
+                        <option value="ASAP">ASAP</option>
+                        <option value="2-3 months">2-3 months</option>
+                        <option value="Within 6 months">Within 6 months</option>
+                        <option value="Unsure">Unsure</option>
+                    </select>
+                </div>
+            </div>
+
+            <button
+                onClick={handleSubmit}
+                className="w-full bg-gradient-to-r from-teal-800 to-orange-500 text-white py-4 px-8 rounded-xl hover:from-teal-900 hover:to-orange-600 transition-all duration-300 flex items-center justify-center space-x-3 text-lg font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+            >
+                <Mail className="w-6 h-6" />
+                <span>Get My Recommendations</span>
+            </button>
+        </div>
+    )
+}
             ];
             if (submitted) {
                 return (
